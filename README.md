@@ -48,7 +48,7 @@ AI 에이전트는 대화가 길어지면 맥락을 잃는다. 이 스킬은 **T
 ## 설치
 
 ```bash
-npx skills add <user>/ai-driven-devops-skills
+npx skills add kimyongin/agentic-devops
 ```
 
 Cursor, Claude Code 등 Agent Skills 표준을 지원하는 AI 도구에 자동 설치된다.
