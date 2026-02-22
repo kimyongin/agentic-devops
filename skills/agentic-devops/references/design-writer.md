@@ -1,42 +1,32 @@
 # Design Writer
 
-## 프로세스 규칙
+> 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `SKILL.md`를 따른다.
 
-- 파이프라인: PRD → **DESIGN** → TASK → CODE → PR → RELEASE. 승인된 PRD를 입력으로 받는다.
-- 산출물 ID: `DESIGN-xxxx` 형식. 메타데이터에 참조 PRD를 필수 기재.
-- 버전: 계약/경계/데이터 모델 변경 → Major, 범위/일정 변경 → Minor, 오타/포맷 → Patch.
-- APPROVED 문서를 변경하면 DRAFT로 되돌리고 재승인. 승인 범위 이탈 시 `CHANGE_REQUEST` 발행.
+- 승인된 PRD를 입력으로 받는다. 산출물 ID: `DESIGN-xxxx-slug`. 메타데이터에 참조 PRD를 필수 기재.
 - 증분 원칙: 기능 단위로 DESIGN을 증분 갱신. 이전 스프린트 DESIGN은 누적(Living Document)으로 관리.
+
+## 목차
+- [실행 절차](#실행-절차)
+- [설계 원칙](#설계-원칙)
+- [설계 문서 템플릿](#설계-문서-템플릿)
 
 ## 실행 절차
 
 ### 1단계: 입력 확인
 
-1. 입력 PRD(`PRD-xxxx`)를 읽고 내용을 파악한다.
+1. 입력 PRD(`PRD-xxxx-slug`)를 읽고 내용을 파악한다.
 2. PRD 상태가 APPROVED인지 확인한다. DRAFT이면 사용자에게 승인 필요를 알린다.
 3. 기존 DESIGN이 있으면 읽고 증분 갱신 여부를 판단한다.
 
 ### 2단계: 설계 문서 생성
 
-아래 **설계 원칙**과 **템플릿**을 따라 `docs/ai-devops/DESIGN/DESIGN-xxxx.md`를 생성한다.
+아래 **설계 원칙**과 **템플릿**을 따라 `docs/ai-devops/DESIGN/DESIGN-xxxx-slug.md`를 생성한다.
 
-### 3단계: 셀프 체크
-
-- [ ] 도메인 경계가 명확한가?
-- [ ] 포트/어댑터가 분리되어 있는가?
-- [ ] 계약(API/이벤트/스키마)이 문서화되었는가?
-- [ ] 테스트 전략과 관측성이 포함되었는가?
-- [ ] SLO/SLI가 정의되었는가?
-- [ ] 마이그레이션/롤백이 고려되었는가?
-- [ ] 멀티 서비스 변경 시 배포 순서와 호환성 정책이 명시되었는가?
-- [ ] 데이터 거버넌스(PII/보존/분류)가 검토되었는가?
-- [ ] 리스크/가정/오픈 이슈가 기록되었는가?
-
-### 4단계: 보고
+### 3단계: 보고
 
 ```
 ## 설계 에이전트 보고서
-- 생성 문서: DESIGN-xxxx
+- 생성 문서: DESIGN-xxxx-slug
 - 발견 사항: (PRD에서 모호하거나 추가 확인이 필요한 부분)
 - 오픈 이슈: (해결되지 않은 질문)
 - 판단 근거: (주요 설계 결정과 근거)
@@ -62,33 +52,42 @@
 - 설계는 "구현 방법"이 아니라 "검증 가능한 약속"을 포함해야 한다.
 - 각 유즈케이스마다 **Acceptance Criteria(인수 기준) + 테스트 전략**을 명시한다.
 
-### 선택의 기록(ADR)
+### 배포 단위 결정(Deployment Unit)
 
-- 중요한 트레이드오프는 ADR로 남긴다(예: 동기 API vs 이벤트, 일관성 전략, 캐시 전략).
+- 기본값은 **모듈러 모놀리스**다. 단일 배포 단위에서 모듈 경계는 헥사고날 포트/어댑터로 분리한다.
+- 아래 기준 중 하나 이상 충족 시 **모노레포 MSA**로 전환을 검토한다:
+  - 모듈 간 독립적 스케일링이 필요한 경우
+  - 모듈별 배포 주기가 현저히 다른 경우
+  - 장애 격리가 필수인 경우 (한 모듈의 장애가 전체를 중단시키면 안 되는 경우)
+  - 모듈별 기술 스택이 근본적으로 다른 경우
+- MSA 전환 시 모노레포를 유지한다. AI 에이전트가 전체 서비스의 코드/계약/타입을 단일 레포에서 파악할 수 있어야 한다.
+- 헥사고날 포트/어댑터 구조 덕분에, 모듈러 모놀리스에서 특정 모듈의 포트 구현만 교체하면 독립 서비스로 추출할 수 있다.
 
 ### 멀티 서비스 조율(Cross-service Coordination)
+
+모노레포 MSA를 선택한 경우, 아래 규칙을 따른다:
 
 - 여러 서비스에 걸친 변경은 **단일 DESIGN 안에 영향 범위를 모두 명시**한다.
 - 크로스 서비스 계약 변경 시 배포 순서: Consumer 하위호환 배포 → Producer 변경 배포 → Consumer 전환 배포.
 - 서비스 간 계약은 **독립 버전**을 가지며, Breaking change가 상대방에 전파되지 않도록 호환성 정책을 수립한다.
-- 조율 필요 서비스가 3개 이상이면 **ADR로 배포 전략을 기록**한다.
+- 조율 필요 서비스가 3개 이상이면 **DESIGN 문서에 배포 전략을 기록**한다.
 
 ---
 
 ## 설계 문서 템플릿
 
-`docs/ai-devops/DESIGN/DESIGN-xxxx.md` 형태로 생성한다.
+`docs/ai-devops/DESIGN/DESIGN-xxxx-slug.md` 형태로 생성한다.
 
-### [DESIGN-xxxx] 설계 문서 제목
+### [DESIGN-xxxx-slug] 설계 문서 제목
 
 #### 메타데이터
-- 문서 ID: `DESIGN-xxxx`
-- 버전: `v0.1`
-- 참조 PRD: `PRD-xxxx`
+- 문서 ID: `DESIGN-xxxx-slug`
+- 버전: `v0.1.0`
+- 참조 PRD: `PRD-xxxx-slug`
 - 작성일: `YYYY-MM-DD`
 - 상태: `DRAFT | APPROVED | DEPRECATED`
 - 오너(승인자): `@name`
-- 관련 ADR: `ADR-xxxx (있다면 링크)`
+
 
 #### 1) 배경(Problem Context)
 - 현상/문제:
@@ -123,30 +122,38 @@
 
 (UC-2, UC-3 ... 반복)
 
-#### 5) 헥사고날 아키텍처(Ports & Adapters)
+#### 5) 아키텍처
 
-##### 5.1 레이어 정의
+##### 5.0 배포 단위(Deployment Unit)
+- 배포 단위: 모듈러 모놀리스 / 모노레포 MSA
+- 모노레포 MSA 선택 시 근거: (스케일링/배포 주기/장애 격리/기술 스택 이질성)
+- 서비스 목록 및 경계: (MSA인 경우)
+- 배포 순서/호환성 정책: (MSA인 경우, 멀티 서비스 조율 원칙에 따라 기술)
+
+##### 5.1 백엔드 — 헥사고날 아키텍처(Ports & Adapters)
+
 - Domain: 순수 도메인 규칙(외부 의존 금지)
 - Application: 유즈케이스 오케스트레이션(포트 인터페이스 의존)
-- Adapters: 외부 시스템 연동/입출력(UI, API, DB, MQ 등)
+- Adapters: 외부 시스템 연동/입출력(API, DB, MQ 등)
 - Infrastructure: 구현 세부(HTTP client, DB driver 등)
+- Inbound/Outbound Ports(인터페이스)와 Adapters(구현)를 나열한다.
 
-##### 5.2 포트(Ports)
-- Inbound Ports(Use case 인터페이스):
-  - `CreateXxxUseCase`
-  - `GetXxxUseCase`
-- Outbound Ports(의존 인터페이스):
-  - `XxxRepository`
-  - `EventPublisher`
-  - `ExternalFooClient`
+##### 5.2 프론트엔드 — Feature-Sliced Design(FSD)
 
-##### 5.3 어댑터(Adapters)
-- Inbound Adapters:
-  - REST Controller / gRPC / CLI / Consumer
-- Outbound Adapters:
-  - DB Repository 구현
-  - MQ Publisher/Producer
-  - External API Client
+- app: 앱 초기화, 프로바이더, 글로벌 스타일, 라우팅
+- pages: 라우트별 페이지 컴포넌트, 페이지 레이아웃
+- widgets: 독립적 UI 블록, 여러 feature/entity를 조합
+- features: 사용자 시나리오 단위 기능(UI + 모델 + API)
+- entities: 비즈니스 엔티티(모델, API, UI 표현)
+- shared: 공통 UI 컴포넌트, 유틸, 타입, API 클라이언트
+- 레이어 위계(하위 → 상위): shared → entities → features → widgets → pages → app
+- 의존 방향: 상위에서 하위로만 허용 (app → pages → widgets → features → entities → shared)
+
+##### 5.3 인프라 — Kubernetes
+
+- 배포 대상 환경(클러스터/네임스페이스)과 리소스(Deployment, Service, Ingress 등)를 정의한다.
+- Helm 차트 또는 매니페스트 구조, 환경별 설정(ConfigMap/Secret) 분리 방안을 명시한다.
+- IaC(Terraform 등) 사용 시 해당 범위와 상태 관리 전략을 기술한다.
 
 #### 6) 계약(Contracts)
 
@@ -182,14 +189,7 @@
 - 감사 로그:
 
 ##### 8.1 데이터 거버넌스
-- 데이터 분류(Classification): 공개/내부/기밀/극비 등급 지정
-- PII(개인식별정보) 목록 및 처리 방침:
-  - 수집 항목/근거/보존 기간:
-  - 마스킹/암호화 정책:
-  - 삭제(Right to be forgotten) 절차:
-- 개인정보보호법/GDPR 준수 항목:
-- 데이터 보존 기간 및 파기 정책:
-- 데이터 접근 통제(최소 권한 원칙):
+- 데이터 분류(공개/내부/기밀/극비), PII 목록 및 처리 방침, 보존/파기 정책, 접근 통제를 정의한다.
 
 #### 9) 관측성 & SLO(Observability)
 - 로그: 구조화 로그 키(예: request_id, user_id, use_case)
@@ -198,67 +198,22 @@
 - 알람: SLO 기반 알람/에러율/지연
 
 ##### 9.1 SLO/SLA 정의(권장)
-- 대상 서비스/엔드포인트:
-- SLI(Service Level Indicator) 정의:
-  - 가용성: (예: 성공 응답 비율)
-  - 지연: (예: P99 latency)
-  - 정확도: (예: 올바른 응답 비율)
-- SLO(Service Level Objective) 목표:
-  - 가용성: (예: 99.9% / 30일 롤링)
-  - 지연: (예: P99 < 200ms)
-- Error Budget 정책:
-  - 잔여 Budget 소진 시 신규 기능 배포 중단, 안정화 집중
-  - Error Budget 리뷰 주기: (예: 주간/격주)
-- SLA(외부 계약, 해당 시):
-  - 위반 시 영향/페널티:
+- SLI 정의(가용성/지연/정확도), SLO 목표, Error Budget 정책, SLA(해당 시)를 정의한다.
 
 #### 10) 테스트 전략(필수) — "무엇을/왜 테스트하는가"
 
 > 설계 단계에서는 **무엇을 검증해야 하는지(대상)**와 **왜 검증해야 하는지(리스크)**를 정의한다.
-> 구체적인 테스트 일정/순서는 작업 계획(TASK)에서, 작성 방법은 코드 가이드에서 다룬다.
+> 구체적인 테스트 일정/순서는 작업 계획(TASK)에서, 작성 방법은 `code-writer.md`에서 다룬다.
 
 - **Unit**: 도메인 불변 조건, 정책 규칙, 유즈케이스 오케스트레이션 로직
 - **Integration**: DB/외부 연동 경로, 트랜잭션 경계
 - **Contract**: API/이벤트/스키마 호환성
 - **E2E**: 핵심 사용자 플로우(주요 UC)
 
-#### 11) 검증 게이트(Approval Gate)
-- 설계 승인 조건:
-  - [ ] 도메인 경계가 명확한가?
-  - [ ] 포트/어댑터가 분리되어 있는가?
-  - [ ] 계약(API/이벤트/스키마)이 문서화되었는가?
-  - [ ] 테스트 전략과 관측성이 포함되었는가?
-  - [ ] SLO/SLI가 정의되었는가?
-  - [ ] 마이그레이션/롤백이 고려되었는가?
-  - [ ] 멀티 서비스 변경 시 배포 순서와 호환성 정책이 명시되었는가?
-  - [ ] 데이터 거버넌스(PII/보존/분류)가 검토되었는가?
-  - [ ] 리스크/가정/오픈 이슈가 기록되었는가?
-
-#### 12) 리스크/가정/오픈 이슈
+#### 11) 리스크/가정/오픈 이슈
 - 리스크:
 - 가정:
 - 오픈 이슈(질문):
 
-#### 13) 변경 이력(Changelog)
-- v0.1: 초안
-
----
-
-## 계약 템플릿(부록)
-
-### API 스펙 템플릿(요약)
-- Endpoint: `POST /v1/...`
-- Request: fields
-- Response: fields
-- Errors: `XXX_INVALID_ARGUMENT`, `XXX_NOT_FOUND`
-- Backward Compatibility:
-- Deprecation Plan:
-
-### 이벤트 스펙 템플릿(요약)
-- Event: `XxxHappened.v1`
-- Key:
-- Payload:
-- Producer:
-- Consumers:
-- Delivery Semantics:
-- Idempotency:
+#### 12) 변경 이력(Changelog)
+- v0.1.0: 초안

@@ -5,6 +5,7 @@ description: >
   AI 기반 소프트웨어 개발 전 과정을 PRD → DESIGN → TASK → CODE → PR → RELEASE
   파이프라인으로 가이드한다. 개발, 코딩, 구현, 설계, 리뷰, 테스트, PR, 머지, 배포,
   릴리스, 롤백, 문서 작성, 리팩토링, 버그 수정 등의 요청 시 사용한다.
+  단순 질문, 1회성 스크립트 작성, 학습/탐색 목적의 코드에는 사용하지 않는다.
 ---
 
 # AgenticDevOps
@@ -12,97 +13,123 @@ description: >
 이 프로젝트는 **PRD → DESIGN → TASK → CODE → PR → RELEASE** 파이프라인을 따른다.
 모든 단계는 이전 단계의 승인된 산출물을 입력으로 받으며, 승인 없이 다음 단계로 진행할 수 없다.
 
+## 목차
+- [산출물 기반 파이프라인](#산출물-기반-파이프라인)
+- [필수 절차](#필수-절차)
+- [세부 작업 가이드](#세부-작업-가이드)
+- [핵심 원칙](#핵심-원칙)
+- [범위 밖](#범위-밖)
+
 ## 산출물 기반 파이프라인
 
-각 단계는 **관리되는 문서**를 산출물로 생성하며, **AI 셀프 체크 → Gate Keeper 검증 → 사람 승인** 3단계를 거쳐야 다음 단계로 진행한다.
-AI Writer가 산출물을 생성하고 셀프 체크하며, Gate Keeper가 검증 보고서를 작성하고, 사람이 이를 참고하여 최종 승인한다.
+각 단계는 **관리되는 문서**를 산출물로 생성하며, **Gate Keeper 검증 → 사람 승인** 2단계를 거쳐야 다음 단계로 진행한다.
+AI Writer가 산출물을 생성하고, Gate Keeper(`gate-keeper.md`)가 검증 및 보고서를 작성하고, 사람이 이를 참고하여 최종 승인한다.
 
 ### 파이프라인 흐름
 
 ```
 PRD(DRAFT) →[승인]→ DESIGN(DRAFT) →[승인]→ TASK(DRAFT) →[승인]→ CODE → PR →[승인]→ RELEASE(DRAFT) →[승인]→ 배포
 
-[승인] = AI Writer 셀프 체크 → Gate Keeper 검증 → 사람 최종 승인
+[승인] = Gate Keeper 검증 → 사람 최종 승인
 ```
 
 ### 산출물 체계
 
 | 단계 | 산출물 ID | 입력 | 산출물 위치 |
 |------|-----------|------|-------------|
-| PRD | `PRD-xxxx` | 사용자 요구사항 | `docs/ai-devops/PRD/` |
-| DESIGN | `DESIGN-xxxx` | 승인된 PRD | `docs/ai-devops/DESIGN/` |
-| TASK | `TASK-xxxx` + `CONTEXT-xxxx` | 승인된 DESIGN | `docs/ai-devops/TASK/` |
+| PRD | `PRD-xxxx-slug` | 사용자 요구사항 | `docs/ai-devops/PRD/` |
+| DESIGN | `DESIGN-xxxx-slug` | 승인된 PRD | `docs/ai-devops/DESIGN/` |
+| TASK | `TASK-xxxx-slug` + `CONTEXT-xxxx-slug` | 승인된 DESIGN | `docs/ai-devops/TASK/` |
 | CODE | 코드/테스트 | 승인된 TASK | `src/`, `test/` |
 | PR | `PR-xxxx` | 구현 코드 | Git PR |
-| RELEASE | `RELEASE-xxxx` | 머지된 PR 목록 | `docs/ai-devops/RELEASE/` |
-| (횡단) | `ADR-xxxx` | 주요 설계 결정/트레이드오프 | `docs/ai-devops/ADR/` |
+| RELEASE | `RELEASE-xxxx-slug` | 머지된 PR 목록 | `docs/ai-devops/RELEASE/` |
 
-> ADR(Architecture Decision Record)은 중요한 기술적 트레이드오프를 기록하며, 어느 단계에서든 작성 가능하다. `design-writer.md`의 '선택의 기록(ADR)' 섹션을 따른다.
+> - `xxxx`는 **산출물 유형별 독립 순번**(0001, 0002, ...)이며, `slug`는 소문자 kebab-case로 핵심 주제를 요약한다.
+> - 예: `PRD-0001-user-auth`, `DESIGN-0001-auth-domain`, `TASK-0001-login-api` (PRD-0001과 DESIGN-0001은 서로 다른 순번 체계)
 
-### 산출물 디렉토리 구조
+### 산출물 간 관계
 
-```
-docs/ai-devops/
-├── PRD/
-│   └── PRD-xxxx.md
-├── DESIGN/
-│   └── DESIGN-xxxx.md
-├── TASK/
-│   ├── TASK-xxxx.md
-│   └── CONTEXT-xxxx.md
-├── RELEASE/
-│   └── RELEASE-xxxx.md
-└── ADR/
-    └── ADR-xxxx.md
-```
+| 관계 | 카디널리티 | 설명 |
+|------|------|------|
+| PRD : DESIGN | 1 : N | 하나의 PRD에서 도메인/모듈별로 설계를 분리 |
+| DESIGN : TASK | 1 : M | 하나의 설계에서 작업 단위로 분해 |
+| TASK : PR | 1 : 1 | 1 PR = 1 TASK. CODE와 PR은 하나의 승인 단위로, code-writer.md가 구현부터 머지까지 가이드 |
+| PR : RELEASE | N : 1 | 여러 머지된 PR을 하나의 릴리스로 묶음 |
 
 ### 문서 상태 흐름
 
-`DRAFT` → `APPROVED` → (변경 시 `DRAFT`로 회귀, 재승인 필요) → `DEPRECATED`
+```
+기본: DRAFT → APPROVED → (변경 시 DRAFT로 회귀, 재승인 필요) → DEPRECATED
+RELEASE 전용: DRAFT → APPROVED → RELEASED → DEPRECATED
+                                ↘ ROLLED_BACK → (수정 후 새 RELEASE 생성)
+```
 
 - APPROVED 상태의 문서를 변경하면 상태를 DRAFT로 되돌리고 재승인한다.
 - 변경 이력(Changelog) 섹션에 버전별 변경 사유를 반드시 기록한다.
+- 산출물이 더 이상 유효하지 않으면(후속 버전으로 대체, 프로젝트 폐기 등) `DEPRECATED`로 전환한다.
+- RELEASE 문서는 배포 완료 시 `RELEASED`, 롤백 시 `ROLLED_BACK`으로 전환한다. 후속 릴리스로 대체되면 `DEPRECATED`로 전환한다. 롤백된 RELEASE는 수정하지 않고, 원인 분석 후 새 RELEASE를 생성한다.
 
 ### 문서 버전 관리 규칙
 
+버전은 **vX.Y.Z**(SemVer 3자리) 형식을 사용한다. 초안은 `v0.1.0`으로 시작한다.
+
 | 변경 유형 | 버전 증분 | 예시 |
 |---|---|---|
-| 계약/경계/데이터 모델 변경 | Major (v1 → v2) | API 엔드포인트 추가, 이벤트 스키마 변경 |
-| 범위/일정/전략 변경 | Minor (v1.0 → v1.1) | 마일스톤 조정, 테스트 전략 수정 |
-| 오타/포맷/표현 수정 | Patch (v1.1.0 → v1.1.1) | 문구 정정, 링크 수정 |
+| 계약/경계/데이터 모델 변경 | Major (X 증가) | v1.0.0 → v2.0.0 — API 엔드포인트 추가, 이벤트 스키마 변경 |
+| 범위/일정/전략 변경 | Minor (Y 증가) | v1.0.0 → v1.1.0 — 마일스톤 조정, 테스트 전략 수정 |
+| 오타/포맷/표현 수정 | Patch (Z 증가) | v1.1.0 → v1.1.1 — 문구 정정, 링크 수정 |
 
 ### 역할 분담
 
 - **Owner(사람)**: PRD 작성/승인, 설계 승인, 작업 계획 승인, 최종 릴리스 승인
-- **AI Writer(도구)**: 가이드 기반 산출물 생성, 변경 제안, 셀프 체크, 보고
+- **AI Writer(도구)**: 가이드 기반 산출물 생성, 변경 제안, 보고
 - **Gate Keeper(도구)**: 산출물 검증, 프로세스 일관성 검증, 게이트 판정 보고
-- **Reviewer(사람)**: 경계, 계약, 리스크, 테스트 전략 검토, 최종 게이트 통과 판단
+- **AI Reviewer(도구)**: PR 단계에서 `code-reviewer.md`에 따라 AI 생성 코드를 교차 검증하고 리뷰 보고서를 작성
+- **Reviewer(사람)**: AI Reviewer 보고서를 참고하여 경계, 계약, 리스크, 테스트 전략을 검토하고 최종 승인/반려 결정
 
 ### 승인 프로세스
 
-모든 산출물은 다음 3단계를 거쳐 승인된다:
+모든 산출물은 다음 2단계를 거쳐 승인된다:
 
-1. **AI Writer 셀프 체크** — 각 레퍼런스의 셀프 체크 항목을 자체 점검
-2. **Gate Keeper 검증** — `gate-keeper.md` 기준으로 산출물 + 프로세스 일관성 검증, 보고서 생성
-3. **사람 승인** — Gate Keeper 보고서를 참고하여 최종 승인/반려/재작업 결정
+1. **Gate Keeper 검증** — `gate-keeper.md`의 해당 단계 체크리스트로 셀프 체크 + 프로세스 일관성 검증, 보고서 생성
+2. **사람 승인** — Gate Keeper 보고서를 참고하여 최종 승인/반려/재작업 결정
+
+CODE/PR 단계에서는 3단계로 확장된다:
+
+1. **CI 자동 게이트** — 포맷/린트, 테스트, 보안 스캔 등 자동 검증 (`code-writer.md` CI 자동 게이트 참조)
+2. **Gate Keeper 검증** — CODE/PR 체크리스트로 산출물 검증 + AI Reviewer가 `code-reviewer.md`에 따라 교차 검증
+3. **사람 승인** — AI 리뷰 보고서를 참고하여 최소 1인 이상 사람 리뷰어가 최종 승인
 
 ### 변경 처리 규칙
 
 승인 범위를 벗어나는 변경은 `CHANGE_REQUEST`를 발행한다.
 
+- **PRD 변경**: 요구사항/범위/우선순위 변경 → PRD 갱신 재승인 → 영향받는 DESIGN 갱신 재승인 → TASK 갱신 → 코드 반영
 - **설계 변경**: 도메인 경계/계약/데이터 모델/유즈케이스 변경 → DESIGN 갱신 재승인 → TASK 갱신 → 코드 반영
 - **작업 변경**: 작업 범위/순서/마일스톤/전략 변경 → TASK 갱신 재승인 → 코드 반영
 - **코드 변경**: 작업 범위 내 구현 수정 → PR 리뷰 및 승인만으로 반영 가능
-- **긴급 수정(핫픽스)**: CODE → PR → RELEASE 단축 파이프라인을 따르며, TASK를 사후 등록한다. 상세는 `release-manager.md`의 '핫픽스 절차' 참조.
+
+### CHANGE_REQUEST 형식
+
+`CHANGE_REQUEST`는 승인된 범위를 벗어나는 변경이 필요할 때 발행한다.
+
+```
+## CHANGE_REQUEST
+- 변경 대상: (산출물 ID — PRD/DESIGN/TASK)
+- 변경 사유: (왜 변경이 필요한가)
+- 영향 범위: (어떤 하위 산출물이 영향받는가)
+- 제안 내용: (변경 내용 요약)
+```
+
+- 발행 즉시 사람에게 보고하고, 승인을 받은 뒤 해당 산출물을 갱신한다.
+- 변경 처리 규칙에 따라 하위 산출물을 캐스케이드 갱신한다.
 
 ## 필수 절차
 
 모든 작업은 아래 순서를 반드시 따른다:
 1. **작업 전**: 아래 라우팅 테이블에서 해당 레퍼런스를 찾아 **먼저 읽는다**. 레퍼런스를 읽지 않고 작업을 시작하지 않는다.
-2. **작업 중**: 레퍼런스의 실행 절차를 단계별로 따른다.
-3. **작업 후**: 레퍼런스의 셀프 체크를 수행하고, 보고 템플릿에 따라 결과를 보고한다.
-   - 공통 확인: 승인 범위 이탈 여부 / 계약 변경 시 문서 동시 수정 / 변경 파일 목록과 의도 명확성
-4. **게이트 검증**: Gate Keeper가 산출물 + 프로세스 일관성을 검증하고 보고서를 생성한다.
+2. **작업 중**: 레퍼런스의 실행 절차를 단계별로 따르고, 보고 템플릿에 따라 결과를 보고한다.
+3. **검증**: `gate-keeper.md`의 해당 단계 체크리스트로 셀프 체크 + 프로세스 일관성을 검증하고 보고서를 생성한다.
 
 ## 세부 작업 가이드
 
@@ -113,8 +140,7 @@ docs/ai-devops/
 | PRD 작성/수정 | `references/prd-writer.md` | 요구사항 정의서 작성. "PRD 작성해줘", "요구사항을 정리해줘" |
 | 설계 문서 생성 | `references/design-writer.md` | 헥사고날 아키텍처 기반 설계. "설계해줘", "DESIGN을 생성해줘" |
 | 작업 계획 생성 | `references/task-writer.md` | WBS/마일스톤 분해. "작업 계획 작성해줘", "TASK를 생성해줘" |
-| 코드 구현 | `references/code-writer.md` | 승인된 TASK 기반 코드 생성. "구현해줘", "코드를 작성해줘" |
-| PR 관리 | `references/pr-manager.md` | PR 생성, CI 확인, 리뷰 조율, 머지. "PR 만들어줘", "머지해줘" |
+| 코드 구현 / PR 관리 | `references/code-writer.md` | 코드 생성, PR 생성, CI 확인, 리뷰, 머지. "구현해줘", "코드를 작성해줘", "PR 만들어줘", "머지해줘" |
 | 코드 리뷰 | `references/code-reviewer.md` | PR 단계에서 AI 생성 코드 교차 검증. "코드 리뷰해줘", "PR을 리뷰해줘" |
 | 릴리스 관리 | `references/release-manager.md` | 릴리스 준비, 배포, 검증, 롤백. "릴리스해줘", "배포해줘" |
 | 게이트 검증 | `references/gate-keeper.md` | 파이프라인 게이트 통과 여부 판정. "게이트 체크해줘", "품질 검증해줘" |
@@ -126,10 +152,16 @@ docs/ai-devops/
 - **산출물 추적**: 모든 산출물은 ID/버전을 가지며, 이전 단계 산출물 ID를 참조한다.
 - **증분 개발**: 한 번에 완성하지 않는다. 기능 단위로 증분 갱신하고, 승인된 범위만 다음 단계로 진행한다.
 
-## 작업 기억 규칙
+## 범위 밖
 
-큰 작업(기능 개발, 설계 변경 등)을 수행할 때는 반드시:
-1. 계획을 먼저 세우고 승인을 받는다.
-2. 승인된 계획을 문서(TASK/맥락 노트)로 저장한다.
-3. 한두 개 작업 단위로 나누어 수행하고, 완료 후 진행 상태를 업데이트한다.
+아래 항목은 본 스킬이 다루지 않는다. 해당 요청이 들어오면 별도 스킬이나 사람의 판단이 필요함을 안내한다.
 
+- 핫픽스/인시던트 관리 (긴급 수정, 온콜, 에스컬레이션, 포스트모템)
+- 프로젝트 부트스트래핑 (저장소 생성, CI/CD 초기 구성, 개발 환경 설정)
+- 인프라 프로비저닝 (Terraform/Pulumi, 클러스터 구성, 네트워크 설정)
+- 모니터링/관측성 도구 구성 (설계에서 "무엇을 관측할지"는 정의하지만, 도구 설치/설정은 범위 밖)
+- 시크릿 관리 도구 운영 (Vault, AWS Secrets Manager 등)
+- 성능/부하 테스트 (k6, Locust 등 실행 및 분석)
+- 재해 복구(DR)/백업 (백업 정책, 복구 절차, RTO/RPO)
+- Feature Flag 운영
+- 의존성 자동 업데이트 도구 운영 (Dependabot/Renovate 등)
