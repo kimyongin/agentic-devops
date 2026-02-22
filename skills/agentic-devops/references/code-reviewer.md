@@ -2,7 +2,7 @@
 
 ## 프로세스 규칙
 
-- 파이프라인: PRD → DESIGN → TASK → CODE → **REVIEW**. 코드 에이전트가 생성한 결과물을 교차 검증한다.
+- 파이프라인: PRD → DESIGN → TASK → CODE → **PR** → RELEASE. PR 단계에서 코드 에이전트가 생성한 결과물을 교차 검증한다.
 - 리뷰 대상: PR 또는 변경된 파일. 참조 TASK/DESIGN이 있으면 함께 확인.
 - Critical/Major 이슈가 있으면 승인하지 않고 수정을 요구한다.
 - "그럴듯하지만 미묘하게 틀린" 코드를 특히 경계한다.

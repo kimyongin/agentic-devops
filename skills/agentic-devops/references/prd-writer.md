@@ -2,7 +2,7 @@
 
 ## 프로세스 규칙
 
-- 파이프라인: **PRD** → DESIGN → TASK → CODE. PRD는 첫 단계 산출물이다.
+- 파이프라인: **PRD** → DESIGN → TASK → CODE → PR → RELEASE. PRD는 첫 단계 산출물이다.
 - 산출물 ID: `PRD-xxxx` 형식. 메타데이터에 문서 ID, 버전, 상태, 오너를 필수 기재.
 - 버전: 계약/경계/데이터 모델 변경 → Major, 범위/일정 변경 → Minor, 오타/포맷 → Patch.
 - APPROVED 문서를 변경하면 DRAFT로 되돌리고 재승인. 승인 범위 이탈 시 `CHANGE_REQUEST` 발행.

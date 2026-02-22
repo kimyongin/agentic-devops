@@ -1,11 +1,11 @@
-# ADDS — AI-Driven DevOps Skills
+# AgenticDevOps
 
-PRD → DESIGN → TASK → CODE 파이프라인을 따르는 AI 기반 소프트웨어 개발 운영 스킬.
+PRD → DESIGN → TASK → CODE → PR → RELEASE 파이프라인을 따르는 AI 기반 소프트웨어 개발 운영 스킬.
 
 ## 설치
 
 ```bash
-npx agent-skills install <user>/ai-driven-devops-skills
+npx skills add <user>/ai-driven-devops-skills
 ```
 
 Cursor, Claude Code 등 Agent Skills 표준을 지원하는 AI 도구에 자동 설치됩니다.
@@ -13,15 +13,17 @@ Cursor, Claude Code 등 Agent Skills 표준을 지원하는 AI 도구에 자동 
 ## 구조
 
 ```
-skills/adds/
+skills/agentic-devops/
 ├── SKILL.md                         # 핵심 원칙 + 작업별 라우팅 테이블
 └── references/
     ├── prd-writer.md                # PRD(요구사항 정의서) 작성 가이드
     ├── design-writer.md             # 헥사고날 아키텍처 기반 설계 문서 가이드
     ├── task-writer.md               # WBS/마일스톤 작업 계획 가이드
     ├── code-writer.md               # 코드 생성 가이드 (컨벤션, 테스트, CI)
+    ├── pr-manager.md                # PR 라이프사이클 관리 가이드
     ├── code-reviewer.md             # AI 생성 코드 리뷰 가이드
-    └── quality-checker.md           # 산출물 품질 검증 가이드
+    ├── release-manager.md           # 릴리스/배포/롤백 관리 가이드
+    └── gate-keeper.md               # 파이프라인 게이트 검증 가이드
 ```
 
 ## 동작 방식
@@ -38,8 +40,10 @@ skills/adds/
 | 설계 | `design-writer.md` | 헥사고날 아키텍처, 계약, 테스트 전략, SLO/SLI |
 | 작업 계획 | `task-writer.md` | WBS 분해, 마일스톤, 맥락 노트, 작업 기억 프로토콜 |
 | 코드 생성 | `code-writer.md` | 레이어 의존 규칙, 브랜칭, 컨벤션, CI 게이트, PR 템플릿 |
+| PR 관리 | `pr-manager.md` | PR 생성, CI 확인, 리뷰 조율, 충돌 해결, 머지 |
 | 코드 리뷰 | `code-reviewer.md` | 환각 검증, 로직/보안/성능/테스트/라이센스 검증 |
-| 품질 검증 | `quality-checker.md` | 산출물별 게이트 기준, 프로세스 일관성, 릴리스 절차 |
+| 릴리스 관리 | `release-manager.md` | 릴리스 문서, 단계 배포, 검증, 롤백, 핫픽스 |
+| 게이트 검증 | `gate-keeper.md` | 파이프라인 게이트 정의, 프로세스 일관성, KPI |
 
 ## 핵심 원칙
 

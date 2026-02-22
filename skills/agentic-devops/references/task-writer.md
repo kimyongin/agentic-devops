@@ -2,7 +2,7 @@
 
 ## 프로세스 규칙
 
-- 파이프라인: PRD → DESIGN → **TASK** → CODE. 승인된 DESIGN을 입력으로 받는다.
+- 파이프라인: PRD → DESIGN → **TASK** → CODE → PR → RELEASE. 승인된 DESIGN을 입력으로 받는다.
 - 산출물 ID: `TASK-xxxx` 형식. 메타데이터에 참조 DESIGN을 필수 기재.
 - 버전: 계약/경계/데이터 모델 변경 → Major, 범위/일정 변경 → Minor, 오타/포맷 → Patch.
 - APPROVED 문서를 변경하면 DRAFT로 되돌리고 재승인. 승인 범위 이탈 시 `CHANGE_REQUEST` 발행.
