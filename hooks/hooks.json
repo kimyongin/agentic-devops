@@ -3,7 +3,7 @@
   "hooks": {
     "SubagentStop": [
       {
-        "matcher": "prd-writer|design-writer|task-writer|code-writer|code-reviewer|local-runner",
+        "matcher": "agentic-devops:(prd-writer|design-writer|task-writer|code-writer|code-reviewer|local-runner)",
         "hooks": [
           {
             "type": "command",
