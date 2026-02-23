@@ -4,7 +4,9 @@
       "Bash(claude model:*)",
       "Bash(cd:*)",
       "Bash(test !:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(ls:*)",
+      "Bash(chmod +x:*)"
     ]
   }
 }
