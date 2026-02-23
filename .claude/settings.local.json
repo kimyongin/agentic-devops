@@ -6,7 +6,9 @@
       "Bash(test !:*)",
       "Bash(test:*)",
       "Bash(ls:*)",
-      "Bash(chmod +x:*)"
+      "Bash(chmod +x:*)",
+      "Bash(python:*)",
+      "Bash(bash:*)"
     ]
   }
 }
