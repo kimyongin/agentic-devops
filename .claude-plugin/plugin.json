@@ -1,0 +1,6 @@
+{
+  "name": "agentic-devops",
+  "description": "PRD → DESIGN → TASK → CODE → PR → RELEASE 파이프라인을 AI로 가이드하는 DevOps 플러그인",
+  "version": "1.0.0",
+  "author": { "name": "kimyongin" }
+}

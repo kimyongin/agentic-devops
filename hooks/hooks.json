@@ -1,0 +1,17 @@
+{
+  "description": "AgenticDevOps 파이프라인 자동화 훅",
+  "hooks": {
+    "SubagentStop": [
+      {
+        "matcher": "prd-writer|design-writer|task-writer|code-writer|code-reviewer|release-manager",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/subagent-stop-handler.js",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
