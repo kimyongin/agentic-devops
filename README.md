@@ -1,10 +1,10 @@
 # AgenticDevOps
 
-AI 에이전트와 함께 소프트웨어를 설계하고, 구현하고, 배포하기 위한 Claude Code Plugin.
+AI 에이전트와 함께 소프트웨어를 설계하고 구현하기 위한 Claude Code Plugin.
 
 ## 왜 만들었나
 
-AI 에이전트는 코드를 잘 작성하지만, 혼자 놔두면 설계 없이 코드를 짜고, 범위를 넘어서 변경하고, 문서 없이 배포한다. 사람이 매번 "설계 먼저 해", "계약 문서 갱신해", "테스트 빠졌어"를 지시하는 건 비효율적이다.
+AI 에이전트는 코드를 잘 작성하지만, 혼자 놔두면 설계 없이 코드를 짜고, 범위를 넘어서 변경하고, 문서 없이 구현한다. 사람이 매번 "설계 먼저 해", "계약 문서 갱신해", "테스트 빠졌어"를 지시하는 건 비효율적이다.
 
 이 플러그인은 AI 에이전트에게 **개발 프로세스 자체를 가르쳐서**, 사람은 의사결정과 승인에 집중하고 AI가 프로세스를 스스로 따르게 한다.
 
@@ -12,17 +12,16 @@ AI 에이전트는 코드를 잘 작성하지만, 혼자 놔두면 설계 없이
 
 ### 산출물 기반 파이프라인
 
-모든 개발을 6단계 파이프라인으로 구조화한다. 각 단계는 이전 단계의 **승인된 산출물**을 입력으로 받으며, 승인 없이 다음 단계로 넘어갈 수 없다.
+모든 개발을 4단계 파이프라인으로 구조화한다. 각 단계는 이전 단계의 **승인된 산출물**을 입력으로 받으며, 승인 없이 다음 단계로 넘어갈 수 없다.
 
 ```
-PRD → DESIGN → TASK → CODE → PR → RELEASE
+PRD → DESIGN → TASK → CODE
 ```
 
 - **PRD**: 무엇을 만들 것인가 (요구사항)
 - **DESIGN**: 어떻게 만들 것인가 (아키텍처, 계약, 테스트 전략)
 - **TASK**: 어떤 순서로 만들 것인가 (WBS, 마일스톤)
-- **CODE → PR**: 구현하고 머지한다
-- **RELEASE**: 배포하고 검증한다
+- **CODE**: 구현하고 검증한다
 
 각 단계에서 사람의 승인/반려/피드백은 `docs/ai-devops/HISTORY/` 에 실행 로그로 자동 기록된다.
 
@@ -85,15 +84,11 @@ claude --plugin-dir ./agentic-devops
   → gate-keeper 검증 → 승인 요청
 
 승인
-  → code-writer 에이전트 스폰 → 코드/테스트 구현 + PR 생성
+  → code-writer 에이전트 스폰 → 코드/테스트 구현
   → gate-keeper 에이전트 스폰 → 프로세스 검증 → 사람 승인
   → code-reviewer 에이전트 스폰 → 코드 품질 검증 → 사람 승인
   → local-runner 에이전트 스폰 → docker compose 로컬 테스트 환경
-  → 사람이 수동 테스트 후 PR 직접 머지
-
-머지 후
-  → release-manager 에이전트 스폰 → RELEASE-0001-v1.0.0.md 생성
-  → gate-keeper 검증 → 승인 요청 → 배포
+  → 사람이 수동 테스트 → 파이프라인 완료
 ```
 
 ### 특정 단계만 실행
@@ -110,7 +105,7 @@ claude --plugin-dir ./agentic-devops
 /agentic-devops:run "인증에 OAuth를 추가하고 싶어"
   → 오케스트레이터: 기존 DESIGN DRAFT로 되돌림
   → design-writer 에이전트 스폰 → DESIGN 갱신
-  → gate-keeper 검증 → 승인 → TASK → CODE → PR → RELEASE
+  → gate-keeper 검증 → 승인 → TASK → CODE
 ```
 
 ## 구조
@@ -127,10 +122,9 @@ agentic-devops/                      # Plugin 루트
 │   ├── prd-writer/SKILL.md          # PRD 작성 가이드
 │   ├── design-writer/SKILL.md       # 설계 문서 가이드
 │   ├── task-writer/SKILL.md         # 작업 계획 가이드
-│   ├── code-writer/SKILL.md         # 코드 구현/PR 관리 가이드
+│   ├── code-writer/SKILL.md         # 코드 구현 가이드
 │   ├── code-reviewer/SKILL.md       # 코드 리뷰 가이드
 │   ├── local-runner/SKILL.md        # 로컬 테스트 환경 가이드
-│   ├── release-manager/SKILL.md     # 릴리스/배포 가이드
 │   └── gate-keeper/SKILL.md         # 게이트 검증 가이드
 ├── agents/                          # 서브에이전트 정의
 │   ├── prd-writer.md
@@ -139,7 +133,6 @@ agentic-devops/                      # Plugin 루트
 │   ├── code-writer.md
 │   ├── code-reviewer.md
 │   ├── local-runner.md
-│   ├── release-manager.md
 │   └── gate-keeper.md
 ├── hooks/
 │   └── hooks.json                   # SubagentStop 자동화 훅
@@ -183,11 +176,7 @@ code-reviewer 에이전트 종료
 
 local-runner 에이전트 종료
   └─ SubagentStop hook → subagent-stop-handler.js
-        └─ "local-runner 완료, 사람이 테스트 후 PR 머지 필요"
-
-release-manager 에이전트 종료
-  └─ SubagentStop hook → subagent-stop-handler.js
-        └─ "release-manager 완료, gate-keeper 실행 필요"
+        └─ "local-runner 완료, 사람이 테스트 후 파이프라인 완료"
 ```
 
 ## 라이센스

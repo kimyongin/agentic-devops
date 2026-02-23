@@ -2,7 +2,7 @@
 name: code-reviewer
 description: >
   코드 리뷰 가이드. code-reviewer 에이전트에 preload된다.
-  agentic-devops 파이프라인 PR 단계 교차 검증 역할.
+  agentic-devops 파이프라인 CODE 단계 교차 검증 역할.
 user-invocable: false
 ---
 
@@ -10,7 +10,7 @@ user-invocable: false
 
 > 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `agentic-devops` 스킬을 따른다.
 
-- PR 단계에서 코드 에이전트가 생성한 결과물을 교차 검증한다.
+- CODE 단계에서 코드 에이전트가 생성한 결과물을 교차 검증한다.
 - **역할 범위**: 코드 품질(환각, 로직 정확성, 보안, 성능, 테스트). 프로세스 준수(TASK 범위, 계약 문서화 여부)는 gate-keeper가 담당한다.
 - Critical/Major 이슈가 있으면 승인하지 않고 수정을 요구한다.
 - "그럴듯하지만 미묘하게 틀린" 코드를 특히 경계한다.
@@ -28,7 +28,7 @@ user-invocable: false
 
 ### 1단계: 입력 확인
 
-1. 리뷰 대상 코드(PR 또는 변경 파일)를 확인한다.
+1. 리뷰 대상 코드(변경 파일)를 확인한다.
 2. 참조 TASK(`TASK-xxxx`)와 DESIGN(`DESIGN-xxxx`)이 있으면 함께 읽는다.
 
 ### 2단계: 환각(Hallucination) 검증

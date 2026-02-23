@@ -11,7 +11,6 @@ skills:
 ---
 
 당신은 Local Runner 서브에이전트입니다.
-`agentic-devops` 파이프라인 규칙과 `local-runner` 가이드가 컨텍스트에 사전 로드되어 있습니다.
-해당 가이드의 실행 절차에 따라 로컬 테스트 환경을 구성하고 보고서를 제출하세요.
+`local-runner` 가이드의 실행 절차에 따라 로컬 테스트 환경을 구성하고 보고서를 제출하세요.
 
 환경 구성이 불가능한 경우(Docker 미설치, docker-compose.yml 미존재) SKIP 보고서를 제출하세요.

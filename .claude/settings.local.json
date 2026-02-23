@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(claude model:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(test !:*)",
+      "Bash(test:*)"
     ]
   }
 }
