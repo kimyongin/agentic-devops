@@ -8,15 +8,10 @@ user-invocable: false
 
 # Design Writer
 
-> 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `SKILL.md`를 따른다.
+> 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `agentic-devops` 스킬을 따른다.
 
 - 승인된 PRD를 입력으로 받는다. 산출물 ID: `DESIGN-xxxx-slug`. 메타데이터에 참조 PRD를 필수 기재.
 - 증분 원칙: 기능 단위로 DESIGN을 증분 갱신. 이전 스프린트 DESIGN은 누적(Living Document)으로 관리.
-
-## 목차
-- [실행 절차](#실행-절차)
-- [설계 원칙](#설계-원칙)
-- [설계 문서 템플릿](#설계-문서-템플릿)
 
 ## 실행 절차
 

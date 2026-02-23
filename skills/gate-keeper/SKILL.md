@@ -8,15 +8,9 @@ user-invocable: false
 
 # Gate Keeper
 
-> 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `SKILL.md`를 따른다.
+> 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `agentic-devops` 스킬을 따른다.
 
 게이트 검증은 모든 산출물 유형(PRD / DESIGN / TASK / CODE / PR / RELEASE)에 대해 수행한다.
-
-## 목차
-- [실행 절차](#실행-절차)
-- [핵심 원칙](#핵심-원칙)
-- [게이트(Gates)](#게이트gates)
-- [프로세스 성과 측정(KPI)](#프로세스-성과-측정kpi)
 
 ---
 

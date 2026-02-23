@@ -170,7 +170,7 @@ task-writer 에이전트 종료
 
 code-writer 에이전트 종료
   └─ SubagentStop hook → subagent-stop-handler.js
-        └─ "code-writer 완료, code-reviewer 실행 필요"
+        └─ "code-writer 완료, gate-keeper 실행 필요"
 
 code-reviewer 에이전트 종료
   └─ SubagentStop hook → subagent-stop-handler.js
