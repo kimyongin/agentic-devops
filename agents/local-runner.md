@@ -1,8 +1,8 @@
 ---
 name: local-runner
 description: >
-  Local Runner 서브에이전트. 코드 리뷰 완료 후 docker compose로 로컬 테스트 환경을 구성한다.
-  오케스트레이터(/agentic-devops:run)가 code-reviewer 승인 후 자동 스폰.
+  Local Runner 서브에이전트. REVIEW 산출물 승인 후 docker compose로 로컬 테스트 환경을 구성한다.
+  오케스트레이터(/agentic-devops:run)가 gate-keeper(REVIEW) 검증 및 사람 승인 후 자동 스폰.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 skills:

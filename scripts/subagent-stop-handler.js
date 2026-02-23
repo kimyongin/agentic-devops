@@ -22,19 +22,16 @@ process.stdin.on('end', () => {
       'design-writer': 'DESIGN',
       'task-writer': 'TASK',
       'code-writer': 'CODE',
+      'code-reviewer': 'REVIEW',
     };
 
     let message = null;
 
     for (const [key, target] of Object.entries(gateTargets)) {
       if (match(key)) {
-        message = `${key} 에이전트가 완료되었습니다.\ngate-keeper 검증이 필요합니다. gate-keeper 에이전트를 실행하여 ${target} 산출물을 검증하세요.`;
+        message = `${key} 에이전트가 완료되었습니다.\n에이전트 보고서를 확인하고, 정상 완료된 경우 gate-keeper 에이전트를 실행하여 ${target} 산출물을 검증하세요. 에이전트가 오류를 보고했으면 보고서 내용에 따라 조치하세요.`;
         break;
       }
-    }
-
-    if (!message && match('code-reviewer')) {
-      message = 'code-reviewer 에이전트가 완료되었습니다.\n코드 리뷰 보고서를 확인하고, 사람에게 최종 승인을 요청하세요.';
     }
 
     if (!message && match('local-runner')) {

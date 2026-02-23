@@ -76,7 +76,21 @@ user-invocable: false
 
 ### 9단계: 보고
 
+리뷰 결과를 `docs/ai-devops/REVIEW/REVIEW-xxxx-slug.md` 파일로 저장한다.
+
+- `xxxx`는 산출물 유형별 독립 순번 규칙을 따른다 (`docs/ai-devops/REVIEW/` 내 기존 파일을 스캔하여 다음 번호 부여).
+- `slug`는 참조 TASK의 slug와 동일하게 사용한다.
+- 기존 REVIEW 파일이 있으면(재리뷰 시) 동일 파일의 버전을 증분하여 갱신한다.
+
 ```
+#### 메타데이터
+- 문서 ID: REVIEW-xxxx-slug
+- 버전: v0.1.0
+- 참조 TASK: TASK-xxxx-slug
+- 작성일: YYYY-MM-DD
+- 상태: DRAFT
+- 오너(승인자): @name
+
 ## 코드 리뷰 보고서
 - 리뷰 대상: (파일 목록)
 - 참조 문서: TASK-xxxx, DESIGN-xxxx
@@ -97,6 +111,9 @@ user-invocable: false
 
 ### 종합 의견
 - 승인 가능 / 수정 후 재리뷰 / 설계 재검토 필요
+
+#### 변경 이력(Changelog)
+- v0.1.0: 초기 리뷰
 ```
 
 ## 핵심 원칙

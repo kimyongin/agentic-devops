@@ -2,7 +2,7 @@
 name: local-runner
 description: >
   로컬 테스트 환경 구성 가이드. local-runner 에이전트에 preload된다.
-  코드 리뷰 승인 후 docker compose로 로컬 실행 환경을 제공한다.
+  REVIEW 산출물 승인 후 docker compose로 로컬 실행 환경을 제공한다.
 user-invocable: false
 ---
 
@@ -10,7 +10,7 @@ user-invocable: false
 
 > 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `agentic-devops` 스킬을 따른다.
 
-- 코드 리뷰 승인 후 실행되는 로컬 테스트 환경 구성 단계이다.
+- REVIEW 산출물 승인 후 실행되는 로컬 테스트 환경 구성 단계이다.
 - docker compose를 사용하여 애플리케이션을 로컬에서 실행하고, 사람이 수동 테스트할 수 있게 한다.
 
 ## 실행 절차

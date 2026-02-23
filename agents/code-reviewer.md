@@ -3,7 +3,7 @@ name: code-reviewer
 description: >
   Code Reviewer 서브에이전트. CODE 단계에서 AI 생성 코드 교차 검증을 전담한다.
   오케스트레이터(/agentic-devops:run)가 gate-keeper 검증 및 사람 승인 후 자동 스폰.
-tools: Read, Glob, Grep
+tools: Read, Write, Glob, Grep
 model: sonnet
 skills:
   - agentic-devops
