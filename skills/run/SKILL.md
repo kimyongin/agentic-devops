@@ -91,9 +91,9 @@ PRD 단계는 사용자 입력이 필요하므로 두 단계로 나누어 처리
 
 | 상태 | 조치 |
 |------|------|
-| PRD 템플릿(`-TEMPLATE.md`) 없음 | `prd-writer`를 **템플릿 생성 모드**로 스폰 |
-| PRD 템플릿 있고, 사용자가 입력 완료를 알린 경우 | `prd-writer`를 **검토 모드**로 스폰 (템플릿 파일 경로 전달) |
-| PRD(`-TEMPLATE.md` 아닌 파일) DRAFT/APPROVED | 아래 일반 파이프라인 흐름으로 진행 |
+| PRD 파일 없음 | `prd-writer`를 **템플릿 생성 모드**로 스폰 |
+| PRD 파일에 `<!-- TODO -->` 마커가 있고, 사용자가 입력 완료를 알린 경우 | `prd-writer`를 **검토 모드**로 스폰 (PRD 파일 경로 전달) |
+| PRD 파일에 `<!-- TODO -->` 마커가 없고 DRAFT/APPROVED | 아래 일반 파이프라인 흐름으로 진행 |
 
 템플릿 생성 후 사용자에게 다음을 안내한다:
 ```
@@ -161,13 +161,13 @@ PRD 템플릿이 생성되었습니다: [파일 경로]
   ├─ 파이프라인 상태 스캔 → 현황 보고
   │
   ├─ [PRD 없음] Task tool → prd-writer (템플릿 생성 모드)
-  │     └─ PRD-xxxx-slug-TEMPLATE.md 생성
+  │     └─ PRD-xxxx-slug.md 생성 (TODO 마커 포함)
   │     └─ 사용자에게 "기술 스택 포함 TODO 작성 후 검토 요청" 안내
   │
-  │   [사용자가 템플릿 작성 완료 후 "PRD 검토 요청"]
+  │   [사용자가 TODO 작성 완료 후 "PRD 검토 요청"]
   │
-  ├─ Task tool → prd-writer (검토 모드, 템플릿 파일 경로 전달)
-  │     └─ PRD-xxxx-slug.md 확정 (DRAFT)
+  ├─ Task tool → prd-writer (검토 모드, PRD 파일 경로 전달)
+  │     └─ PRD-xxxx-slug.md 검토·정제 후 확정 (DRAFT)
   │
   │   SubagentStop hook → "prd-writer 완료, gate-keeper 실행 필요"
   │
