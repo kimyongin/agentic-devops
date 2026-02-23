@@ -4,14 +4,14 @@ description: >
   AgenticDevOps 파이프라인 규칙. 산출물 체계, 문서 상태/버전 관리, 역할 분담,
   승인 프로세스, 변경 처리 규칙을 정의한다.
   파이프라인 에이전트(prd-writer, design-writer, task-writer, code-writer,
-  code-reviewer, release-manager, gate-keeper)에 preload되어 공통 규칙을 주입한다.
+  code-reviewer, local-runner, release-manager, gate-keeper)에 preload되어 공통 규칙을 주입한다.
 user-invocable: false
 ---
 
 # AgenticDevOps
 
 > **이 스킬의 목적**: 파이프라인 서브에이전트(prd-writer, design-writer, task-writer,
-> code-writer, code-reviewer, release-manager, gate-keeper)를 위한 **공통 규칙집**이다.
+> code-writer, code-reviewer, local-runner, release-manager, gate-keeper)를 위한 **공통 규칙집**이다.
 > 오케스트레이션 로직(에이전트 스폰 조건, 승인 처리)은 `run` 스킬이 담당한다.
 
 이 프로젝트는 **PRD → DESIGN → TASK → CODE → PR → RELEASE** 파이프라인을 따른다.
@@ -84,6 +84,7 @@ RELEASE 전용: DRAFT → APPROVED → RELEASED → DEPRECATED
 - **AI Writer(도구)**: 가이드 기반 산출물 생성, 변경 제안, 보고
 - **Gate Keeper(도구)**: 산출물 검증, 프로세스 일관성 검증, 게이트 판정 보고
 - **code-reviewer(도구)**: PR 단계에서 AI 생성 코드를 교차 검증하고 리뷰 보고서를 작성
+- **local-runner(도구)**: code-reviewer 승인 후 docker compose로 로컬 테스트 환경을 구성하고 접속 정보를 보고
 - **Reviewer(사람)**: AI Reviewer 보고서를 참고하여 최종 승인/반려 결정
 
 ### 승인 프로세스
@@ -93,12 +94,13 @@ RELEASE 전용: DRAFT → APPROVED → RELEASED → DEPRECATED
 1. **Gate Keeper 검증** — 해당 단계 체크리스트로 셀프 체크 + 프로세스 일관성 검증, 보고서 생성
 2. **사람 승인** — Gate Keeper 보고서를 참고하여 최종 승인/반려/재작업 결정
 
-CODE/PR 단계에서는 4단계로 확장된다:
+CODE/PR 단계에서는 5단계로 확장된다:
 
 1. **CI 자동 게이트** — 포맷/린트, 테스트, 보안 스캔 등 자동 검증
 2. **Gate Keeper 검증 → 사람 승인** — 프로세스 준수 검증 후 사람 승인
-3. **code-reviewer 교차 검증** — AI 생성 코드의 품질(환각, 로직, 보안, 성능) 검증
-4. **사람 리뷰어 최종 승인** — code-reviewer 보고서를 참고하여 최소 1인 이상 사람 리뷰어가 PR 직접 머지
+3. **code-reviewer 교차 검증 → 사람 승인** — AI 생성 코드의 품질(환각, 로직, 보안, 성능) 검증 후 사람 승인
+4. **local-runner 로컬 테스트** — docker compose로 로컬 환경을 구성하여 사람이 수동 테스트 (Docker 미설치 시 SKIP)
+5. **사람 리뷰어 최종 머지** — 테스트 완료 후 최소 1인 이상 사람 리뷰어가 PR 직접 머지
 
 ### 변경 처리 규칙
 

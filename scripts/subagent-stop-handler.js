@@ -36,6 +36,10 @@ process.stdin.on('end', () => {
       message = 'code-reviewer 에이전트가 완료되었습니다.\n코드 리뷰 보고서를 확인하고, 사람 리뷰어에게 최종 승인을 요청하세요.';
     }
 
+    if (!message && agentName.includes('local-runner')) {
+      message = 'local-runner 에이전트가 완료되었습니다.\n로컬 테스트 환경 보고서를 확인하세요. 테스트 완료 후 "테스트 완료"를 전달하면 PR 머지 단계로 진행합니다.';
+    }
+
     if (!message) process.exit(0);
 
     process.stdout.write(JSON.stringify({ additionalContext: message }));

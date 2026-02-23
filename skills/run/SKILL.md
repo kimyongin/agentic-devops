@@ -113,7 +113,7 @@ PRD 템플릿이 생성되었습니다: [파일 경로]
 | PR 존재, gate-keeper 통과 후 사람 승인 완료 | `code-reviewer` | PR 생성됨 |
 | PR 머지됨, 릴리스 필요 | `release-manager` | 머지된 PR 존재 |
 
-> **CODE/PR 단계 흐름**: code-writer 완료 → gate-keeper(프로세스 검증) → 사람 승인 → code-reviewer(코드 품질 검증) → 사람이 PR 직접 머지 → `/agentic-devops:run` 재실행 → release-manager 스폰.
+> **CODE/PR 단계 흐름**: code-writer 완료 → gate-keeper(프로세스 검증) → 사람 승인 → code-reviewer(코드 품질 검증) → 사람 승인 → local-runner(로컬 테스트 환경) → 사람이 테스트 후 PR 직접 머지 → `/agentic-devops:run` 재실행 → release-manager 스폰.
 
 ### 3단계: Gate Keeper 검증
 
@@ -141,6 +141,17 @@ PRD 템플릿이 생성되었습니다: [파일 경로]
 - **승인**: 해당 산출물 본문의 메타데이터 섹션에서 `상태` 필드를 `APPROVED`로 직접 갱신한 후, 다음 파이프라인 단계 에이전트를 스폰한다.
 - **반려**: 해당 단계 에이전트를 다시 스폰하여 재작업을 요청한다.
 - **수정 후 재검증**: 수정 완료 후 `gate-keeper` 에이전트를 재스폰한다.
+
+#### local-runner 스폰 조건
+
+code-reviewer 보고서를 사람이 승인한 후, PR 머지 전에 로컬 테스트 환경을 제공한다:
+
+| 상태 | 조치 |
+|------|------|
+| code-reviewer 승인 완료 | `local-runner`를 스폰 |
+| local-runner SKIP 보고 | 바로 PR 머지 단계로 안내 |
+| local-runner 실행 중 보고 | 사용자에게 테스트 안내, "테스트 완료" 또는 "이슈 발견" 대기 |
+| local-runner 실패 보고 | 사용자에게 원인 보고, code-writer 재스폰 또는 PR 머지 단계 선택 |
 
 ### 5단계: 사용자 변경 요청 처리
 
@@ -182,7 +193,11 @@ PRD 템플릿이 생성되었습니다: [파일 경로]
   │
   ├─ code-writer 완료 → gate-keeper (프로세스 검증) → 사람 승인
   ├─ 승인 → Task tool → code-reviewer (코드 품질 검증)
-  ├─ code-reviewer 완료 → 사람 리뷰어가 PR 직접 머지
+  ├─ code-reviewer 완료 → 사람 승인
+  ├─ 승인 → Task tool → local-runner (로컬 테스트 환경)
+  │     └─ SKIP: Docker 미설치 또는 docker-compose 파일 없음 → 바로 머지 단계
+  │     └─ 실행 중: 사람이 수동 테스트 후 "테스트 완료" 전달
+  ├─ 테스트 완료 → 사람 리뷰어가 PR 직접 머지
   └─ 머지 완료 후 /agentic-devops:run 재실행 → release-manager 스폰
 ```
 
