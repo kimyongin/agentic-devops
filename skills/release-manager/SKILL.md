@@ -1,3 +1,11 @@
+---
+name: release-manager
+description: >
+  릴리스 및 배포 관리 가이드. release-manager 에이전트에 preload된다.
+  agentic-devops 파이프라인 마지막 단계.
+user-invocable: false
+---
+
 # Release Manager
 
 > 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `SKILL.md`를 따른다.
@@ -82,8 +90,6 @@
 1. **릴리스 노트 발행**: 주요 변경 사항, 계약 변경, 알려진 이슈를 포함하여 릴리스 노트를 작성한다.
 2. **운영 문서 갱신**: 대시보드/알람/런북 등 운영 관련 문서를 업데이트한다.
 3. **RELEASE 문서 상태 업데이트**: 배포 완료 시 `RELEASED`, 롤백 시 `ROLLED_BACK`으로 갱신한다.
-   - `RELEASED` 상태의 RELEASE가 후속 릴리스로 대체되면 `DEPRECATED`로 전환한다.
-   - `ROLLED_BACK` 상태의 RELEASE는 수정하지 않는다. 원인 분석 후 `CHANGE_REQUEST`를 발행하고, 수정된 코드로 새 RELEASE를 생성한다.
 4. **TASK 상태 확정**: 모든 관련 TASK를 `DONE`으로 업데이트한다.
 
 ### 8단계: 보고
@@ -164,5 +170,3 @@
 
 #### 5) 변경 이력(Changelog)
 - v0.1.0: 초안
-
-

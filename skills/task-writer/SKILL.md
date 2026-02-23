@@ -1,3 +1,11 @@
+---
+name: task-writer
+description: >
+  작업 계획 작성 가이드. task-writer 에이전트에 preload된다.
+  agentic-devops 파이프라인 세 번째 단계.
+user-invocable: false
+---
+
 # Task Writer
 
 > 파이프라인 규칙, 산출물 체계, 역할, 변경 처리는 `SKILL.md`를 따른다.
