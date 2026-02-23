@@ -47,10 +47,19 @@ PRD에 기술 스택 섹션이 명시되어 있으면 해당 내용을 따른다
 
 ## 설치
 
+### 방법 1: 마켓플레이스 (권장)
+
+클론 없이 바로 설치한다.
+
+```shell
+/plugin marketplace add kimyongin/agentic-devops
+/plugin install agentic-devops@kimyongin
+```
+
+### 방법 2: 로컬 클론
+
 ```bash
 git clone https://github.com/kimyongin/agentic-devops
-
-# 플러그인을 지정하여 Claude Code 실행
 claude --plugin-dir ./agentic-devops
 ```
 
