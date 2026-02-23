@@ -24,6 +24,8 @@ PRD → DESIGN → TASK → CODE → PR → RELEASE
 - **CODE → PR**: 구현하고 머지한다
 - **RELEASE**: 배포하고 검증한다
 
+각 단계에서 사람의 승인/반려/피드백은 `docs/ai-devops/HISTORY/` 에 실행 로그로 자동 기록된다.
+
 ### AI가 쓰고, AI가 검증하고, 사람이 승인한다
 
 AI Writer가 산출물을 생성하면, Gate Keeper(역시 AI)가 체크리스트로 검증하고 보고서를 작성한다. 사람은 보고서를 참고하여 승인/반려만 하면 된다.
@@ -85,8 +87,9 @@ claude --plugin-dir ./agentic-devops
 승인
   → code-writer 에이전트 스폰 → 코드/테스트 구현 + PR 생성
   → gate-keeper 에이전트 스폰 → 프로세스 검증 → 사람 승인
-  → code-reviewer 에이전트 스폰 → 코드 품질 검증
-  → 사람 리뷰어가 PR 직접 머지
+  → code-reviewer 에이전트 스폰 → 코드 품질 검증 → 사람 승인
+  → local-runner 에이전트 스폰 → docker compose 로컬 테스트 환경
+  → 사람이 수동 테스트 후 PR 직접 머지
 
 머지 후
   → release-manager 에이전트 스폰 → RELEASE-0001-v1.0.0.md 생성
@@ -126,6 +129,7 @@ agentic-devops/                      # Plugin 루트
 │   ├── task-writer/SKILL.md         # 작업 계획 가이드
 │   ├── code-writer/SKILL.md         # 코드 구현/PR 관리 가이드
 │   ├── code-reviewer/SKILL.md       # 코드 리뷰 가이드
+│   ├── local-runner/SKILL.md        # 로컬 테스트 환경 가이드
 │   ├── release-manager/SKILL.md     # 릴리스/배포 가이드
 │   └── gate-keeper/SKILL.md         # 게이트 검증 가이드
 ├── agents/                          # 서브에이전트 정의
@@ -134,6 +138,7 @@ agentic-devops/                      # Plugin 루트
 │   ├── task-writer.md
 │   ├── code-writer.md
 │   ├── code-reviewer.md
+│   ├── local-runner.md
 │   ├── release-manager.md
 │   └── gate-keeper.md
 ├── hooks/
@@ -174,7 +179,11 @@ code-writer 에이전트 종료
 
 code-reviewer 에이전트 종료
   └─ SubagentStop hook → subagent-stop-handler.js
-        └─ "code-reviewer 완료, 사람 리뷰어 PR 머지 필요"
+        └─ "code-reviewer 완료, 사람 승인 후 local-runner 실행 필요"
+
+local-runner 에이전트 종료
+  └─ SubagentStop hook → subagent-stop-handler.js
+        └─ "local-runner 완료, 사람이 테스트 후 PR 머지 필요"
 
 release-manager 에이전트 종료
   └─ SubagentStop hook → subagent-stop-handler.js
