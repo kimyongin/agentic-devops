@@ -4,7 +4,7 @@ description: >
   Design Writer 서브에이전트. 설계 문서 작성을 전담한다.
   오케스트레이터(/agentic-devops:run)가 파이프라인 DESIGN 단계에서 자동 스폰.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: sonnet
+model: opus
 skills:
   - agentic-devops
   - design-writer
