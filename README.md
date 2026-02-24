@@ -138,7 +138,10 @@ agentic-devops/                      # Plugin 루트
 ├── hooks/
 │   └── hooks.json                   # SubagentStop 자동화 훅
 └── scripts/
-    └── subagent-stop-handler.js     # 에이전트 완료 → 다음 단계 안내
+    ├── subagent-stop-handler.js     # 에이전트 완료 → 다음 단계 안내
+    ├── now.js                       # 현재 시각 출력 (Node.js)
+    ├── now.py                       # 현재 시각 출력 (Python)
+    └── now.sh                       # now.js/now.py 래퍼 (환경 자동 감지)
 ```
 
 ## 4개 컴포넌트 역할

@@ -3,12 +3,11 @@
   "hooks": {
     "SubagentStop": [
       {
-        "matcher": "agentic-devops:(prd-writer|design-writer|task-writer|code-writer|code-reviewer|local-runner)",
         "hooks": [
           {
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/subagent-stop-handler.js",
-            "timeout": 10
+            "timeout": 30
           }
         ]
       }

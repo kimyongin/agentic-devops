@@ -1,8 +1,8 @@
 ---
 name: gate-keeper
 description: >
-  Gate Keeper 서브에이전트. 파이프라인 산출물 검증을 전담한다.
-  오케스트레이터(/agentic-devops:run)가 각 단계 완료 후 자동 스폰.
+  Gate Keeper 서브에이전트. PRD/DESIGN/TASK/CODE/REVIEW 산출물의 프로세스 준수를 검증하고 게이트 판정을 전담한다.
+  오케스트레이터(/agentic-devops:run)가 각 Writer/Reviewer 에이전트 완료 후 자동 스폰.
 tools: Read, Glob, Grep
 model: sonnet
 skills:

@@ -10,15 +10,13 @@ process.stdin.setEncoding('utf8');
 process.stdin.on('data', (chunk) => { input += chunk; });
 process.stdin.on('end', () => {
   const fs = require('fs');
-  const logFile = require('path').join(__dirname, '..', 'hook-debug.log');
-  const log = (msg) => fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);
+  const path = require('path');
+  fs.writeFileSync(path.join(__dirname, '..', 'hook-debug.log'), input);
 
   try {
-    log(`raw input: ${input}`);
     const event = JSON.parse(input);
     const agentName = (event?.agent_name || event?.agent_type || '').toLowerCase();
-    log(`agent_name=${event?.agent_name}, agent_type=${event?.agent_type}, resolved=${agentName}`);
-    if (!agentName) { log('no agentName, exiting'); process.exit(0); }
+    if (!agentName) { process.exit(0); }
 
     const match = (name) => agentName === name || agentName.endsWith(name);
 
@@ -44,10 +42,9 @@ process.stdin.on('end', () => {
       message = 'local-runner 에이전트가 완료되었습니다.\n로컬 테스트 환경 보고서를 확인하세요. 테스트 완료 후 "테스트 완료"를 전달하면 파이프라인이 완료됩니다.';
     }
 
-    if (!message) { log('no matching agent, exiting'); process.exit(0); }
+    if (!message) { process.exit(0); }
 
-    log(`output message: ${message}`);
-    process.stdout.write(JSON.stringify({ additionalContext: message }));
+    process.stdout.write(JSON.stringify({ decision: 'approve', systemMessage: message }));
     process.exit(0);
   } catch (err) {
     process.stderr.write(`[subagent-stop-handler] error: ${err.message}\n`);
