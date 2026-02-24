@@ -7,7 +7,7 @@
     {
       "name": "agentic-devops",
       "description": "PRD → DESIGN → TASK → CODE(리뷰+로컬테스트) 파이프라인을 AI로 가이드하는 DevOps 플러그인",
-      "version": "1.2.5",
+      "version": "1.2.6",
       "source": {
         "source": "github",
         "repo": "kimyongin/agentic-devops"
