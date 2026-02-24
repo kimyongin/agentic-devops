@@ -3,6 +3,7 @@
   "hooks": {
     "SubagentStop": [
       {
+        "matcher": "agentic-devops:",
         "hooks": [
           {
             "type": "command",

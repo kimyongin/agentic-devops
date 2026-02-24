@@ -11,14 +11,15 @@ process.stdin.on('data', (chunk) => { input += chunk; });
 process.stdin.on('end', () => {
   const fs = require('fs');
   const path = require('path');
-  fs.writeFileSync(path.join(__dirname, '..', 'hook-debug.log'), input);
+  const logFile = path.join(__dirname, '..', 'hook-debug.log');
+  fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${input}\n`);
 
   try {
     const event = JSON.parse(input);
-    const agentName = (event?.agent_name || event?.agent_type || '').toLowerCase();
-    if (!agentName) { process.exit(0); }
+    const agentType = (event?.agent_type || '').toLowerCase();
+    if (!agentType) { process.exit(0); }
 
-    const match = (name) => agentName === name || agentName.endsWith(name);
+    const match = (name) => agentType === name || agentType.endsWith(name);
 
     // gate-keeper 검증이 필요한 에이전트 → 산출물 유형 매핑
     const gateTargets = {
@@ -36,6 +37,10 @@ process.stdin.on('end', () => {
         message = `${key} 에이전트가 완료되었습니다.\n에이전트 보고서를 확인하고, 정상 완료된 경우 gate-keeper 에이전트를 실행하여 ${target} 산출물을 검증하세요. 에이전트가 오류를 보고했으면 보고서 내용에 따라 조치하세요.`;
         break;
       }
+    }
+
+    if (!message && match('gate-keeper')) {
+      message = 'gate-keeper 에이전트가 완료되었습니다.\n게이트 검증 보고서를 확인하세요. 통과인 경우 다음 단계를 진행하고, 실패인 경우 보고서에 따라 해당 에이전트를 재실행하세요.';
     }
 
     if (!message && match('local-runner')) {
